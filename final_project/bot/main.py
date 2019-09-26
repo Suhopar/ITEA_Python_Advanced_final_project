@@ -50,9 +50,9 @@ def show_category(message):
             callback_data = 'subcategory_' + str(i.id)
             buttons_list.append(
                 telebot.types.InlineKeyboardButton(text=i.title + " >>", callback_data=callback_data))
-        else:
-            buttons_list.append(
-                telebot.types.InlineKeyboardButton(text=i.title, callback_data=callback_data))
+        # else:
+        #     buttons_list.append(
+        #         telebot.types.InlineKeyboardButton(text=i.title, callback_data=callback_data))
     inline_kb.add(*buttons_list)
     bot.send_message(chat_id=message.chat.id,
                      text=START_KEYBOARD[language]['category'],
@@ -67,10 +67,10 @@ def sub_cat(call):
     subcats_buttons = []
     subcats = Category.objects.get(id=call.data.split('_')[1])
     for i in subcats.sub_categories:
-        callback_data = 'category_' + str(i.id)
-
         if i.is_parent:
             callback_data = 'subcategory_' + str(i.id)
+        else:
+            callback_data = 'category_' + str(i.id)
 
         subcats_buttons.append(
             telebot.types.InlineKeyboardButton(text=i.title,
@@ -84,6 +84,31 @@ def sub_cat(call):
     bot.send_message(call.from_user.id,
                      text='sub category',
                      reply_markup=subcats_kb)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == '<<')
+def beck_to_cat(call):
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id)
+    if User.objects.get(user_id=call.message.chat.id):
+        language = User.objects.get(user_id=call.message.chat.id).get_user_language
+    else:
+        language = 'uk'
+    inline_kb = telebot.types.InlineKeyboardMarkup()
+    buttons_list = []
+    for i in Category.objects:
+        callback_data = 'category_' + str(i.id)
+        if i.is_parent:
+            callback_data = 'subcategory_' + str(i.id)
+            buttons_list.append(
+                telebot.types.InlineKeyboardButton(text=i.title + " >>", callback_data=callback_data))
+        # else:
+        #     buttons_list.append(
+        #         telebot.types.InlineKeyboardButton(text=i.title, callback_data=callback_data))
+    inline_kb.add(*buttons_list)
+    bot.send_message(chat_id=call.message.chat.id,
+                     text=START_KEYBOARD[language]['category'],
+                     reply_markup=inline_kb)
+
 
 
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'category')

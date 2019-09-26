@@ -7,6 +7,7 @@ from models.user_model import User
 class Category(Document):
     title = StringField(max_length=64)
     sub_categories = ListField(ReferenceField('self'))
+    language = StringField()
 
     def __str__(self):
         return f'title - {self.title}'
@@ -24,6 +25,7 @@ class Category(Document):
 
 class Product(Document):
     title = StringField(max_length=64)
+    language = StringField()
     image = FileField(required=True)
     description = StringField(max_length=4096)
     price = IntField(min_value=0)
@@ -31,6 +33,7 @@ class Product(Document):
     is_available = BooleanField()
     is_discount = BooleanField(default=False)
     category = ReferenceField(Category)
+    # clothing_size = IntField(null=True)
     weight = FloatField(min_value=0, null=True)
     width = FloatField(min_value=0, null=True)
     height = FloatField(min_value=0, null=True)
