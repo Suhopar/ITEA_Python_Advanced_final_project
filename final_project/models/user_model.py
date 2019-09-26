@@ -13,6 +13,10 @@ class User(Document):
     def get_user_language(self):
         return self.language
 
+    def new_language(self, lang):
+        self.language = lang
+        return
+
     @classmethod
     def get_or_create_user(cls, message, language):
         user = cls.objects.filter(user_id=message.from_user.id).first()

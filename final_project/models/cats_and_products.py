@@ -14,8 +14,8 @@ class Category(Document):
 
     @property
     def category_products(self):
-        return Product.objects.filter(category=self,
-                                      is_available=True)
+        return Product.objects.filter(category=self)#,
+                                      # is_available=True)
 
     @property
     def is_parent(self):
@@ -33,10 +33,8 @@ class Product(Document):
     is_available = BooleanField()
     is_discount = BooleanField(default=False)
     category = ReferenceField(Category)
-    # clothing_size = IntField(null=True)
-    weight = FloatField(min_value=0, null=True)
-    width = FloatField(min_value=0, null=True)
-    height = FloatField(min_value=0, null=True)
+    clothing_size = StringField(null=True)
+
 
     def __str__(self):
         return f'title - {self.title}, category - {self.category}, price - {self.price}'
@@ -44,7 +42,7 @@ class Product(Document):
     @property
     def get_product_info(self):
         return {"price": self.price,
-                "weight": self.weight, "width": self.width, "height": self.height,
+                "clothing_size": self.clothing_size,
                 "quantity": self.quantity}
 
 
