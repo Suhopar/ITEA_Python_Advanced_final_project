@@ -82,3 +82,18 @@ Buyer Information -> there will be no discounts
 {"_id":"5d7b6ec1888df73f44bc9acd","title":"Buyer Information","text":"Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя Информация для покупателя ","language":"ru"}
 
 _________________----___________________
+
+# ----------
+    # seed_products_with_image()
+    # cats = seed_and_get_categories_2()
+    # seed_products(20, cats)
+    # text = dict(
+    #     title='Greetings',
+    #     text='Доброго времени суток',
+    #     language='ru'
+    # )
+    # Texts(**text).save()
+    # cats = seed_and_get_categories_2()
+    # cat_obj = Category.objects.get(title="sneakers")
+    # cat_obj.sub_categories = cats
+    # print(cat_obj.save())

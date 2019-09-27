@@ -1,7 +1,7 @@
 import telebot
 from bot.config import TOKEN, START_KEYBOARD, MESSAGE_NOTIFICATION
 from models.cats_and_products import Texts, Category, Cart, Product, OrdersHistory
-from mongoengine import connect
+from mongoengine import connect, register_connection
 from models.user_model import User
 from bson import ObjectId
 from telebot.types import (
@@ -10,34 +10,36 @@ from telebot.types import (
     ReplyKeyboardMarkup
 )
 
+# from mongoengine import register_connection
+#
+# register_connection(alias=None, db='bot_shop', host='35.224.157.246', port='27017')
+
 connect('bot_shop')
 bot = telebot.TeleBot(TOKEN)
 
-
 class Storage:
-    language = ''
-    user_id = ''
+    language = 'uk'
 
 
 @bot.message_handler(commands=['start'])
 def language_or_greetings(message):
     if User.objects(user_id=message.from_user.id):
         language = User.objects.get(user_id=message.from_user.id).get_user_language
+        Storage.language = language
         start_keyboard = START_KEYBOARD[language]
         s = u'\U0000270C'
         hello = s + Texts.objects.get(title='Greetings', language=language).text + f', {message.chat.first_name}'
         kb = ReplyKeyboardMarkup(resize_keyboard=True)
         kb.add(*start_keyboard.values())
         bot.send_message(message.chat.id, hello, reply_markup=kb)
-
     else:
+        Storage.language = 'uk'
         User.get_or_create_user(message, 'uk')
         kb = ReplyKeyboardMarkup(resize_keyboard=True)
-        kb.add(START_KEYBOARD['uk'].values())
+        kb.add(*START_KEYBOARD['uk'].values())
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['category'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['category'])
 def show_category(message):
     print("Category")
     if User.objects.get(user_id=message.from_user.id):
@@ -112,7 +114,6 @@ def beck_to_cat(call):
                      reply_markup=inline_kb)
 
 
-
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'category')
 def show_product(call):
     print(call.data.split('_')[1])
@@ -136,7 +137,7 @@ def show_product(call):
 
         bot.send_photo(call.message.chat.id, p.image.get(),
                        caption=p.title + p.description, reply_markup=products_kb)
-        # bot.send_message(call.message.chat.id, text=p.title, reply_markup=products_kb) #  +'\n'+ p.description
+        # bot.send_message(call.message.chat.id, text=p.title, reply_markup=products_kb)  # +'\n'+ p.description
 
 
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'addtocart')
@@ -152,14 +153,13 @@ def show_info_product(call):
     product_info = Product.objects.get(id=call.data.split('_')[1]).get_product_info
     language = User.objects.get(user_id=call.message.from_user.id).get_user_language
     bot.send_message(call.message.chat.id, f"{MESSAGE_NOTIFICATION[language]['price']} - {product_info['price']}"
-                                           f"\n{MESSAGE_NOTIFICATION[language]['clothing_size']}"
-                                           f" - {product_info['clothing_size']}"
-                                           f"\n{MESSAGE_NOTIFICATION[language]['quantity']}"
-                                           f" - {product_info['quantity']}")
+    f"\n{MESSAGE_NOTIFICATION[language]['clothing_size']}"
+    f" - {product_info['clothing_size']}"
+    f"\n{MESSAGE_NOTIFICATION[language]['quantity']}"
+    f" - {product_info['quantity']}")
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['cart'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['cart'])
 def show_cart(message):
     current_user = User.objects.get(user_id=message.chat.id)
     cart = Cart.objects.filter(user=current_user, is_archived=False).first()
@@ -187,8 +187,7 @@ def show_cart(message):
     )
     submit_kb.add(submit_button)
     bot.send_message(message.chat.id,
-                     MESSAGE_NOTIFICATION[User.objects.get(
-                         user_id=message.from_user.id).get_user_language]['confirm_your_order'], reply_markup=submit_kb)
+                     MESSAGE_NOTIFICATION[Storage.language]['confirm_your_order'], reply_markup=submit_kb)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'rmproduct')
@@ -212,8 +211,7 @@ def submit_cart(call):
     order_history.save()
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['cart_archive'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['cart_archive'])
 def show_arh(message):
     list_product = (OrdersHistory.objects.filter(user=User.objects.get(user_id=message.chat.id)).first()).get_orders
     for i in range(0, len(list_product)):
@@ -222,8 +220,7 @@ def show_arh(message):
             bot.send_message(message.chat.id, p[i].title)
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['language'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['language'])
 def language(message):
     products_kb = telebot.types.InlineKeyboardMarkup(row_width=2)
     products_kb.add(telebot.types.InlineKeyboardButton(text='uk',
@@ -234,14 +231,14 @@ def language(message):
 
 
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'language')
-def lang_upd(call):
+def language_upd(call):
     lang = call.data.split('_')[1]
     User.objects(user_id=call.message.chat.id).update(language=lang)
+    Storage.language = lang
     bot.send_message(call.message.chat.id, MESSAGE_NOTIFICATION[lang]['enter_start'])
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['latest_news'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['latest_news'])
 def latest_news(message):
     print("Latest news")
     bot.send_message(message.chat.id, Texts.objects.get(title=START_KEYBOARD['uk']['latest_news'],
@@ -249,8 +246,7 @@ def latest_news(message):
                                                             user_id=message.from_user.id).get_user_language).text)
 
 
-@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[User.objects.get(
-                                    user_id=m.from_user.id).get_user_language]['buyer_information'])
+@bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['buyer_information'])
 def buyer_information(message):
     print("Buyer Information")
     bot.send_message(message.chat.id, Texts.objects.get(title=START_KEYBOARD['uk']['buyer_information'],

@@ -1,6 +1,7 @@
 import random
 import string
 from models.cats_and_products import Category, Product, Texts
+from models.user_model import User
 from mongoengine import connect
 
 random_bool = (True, False)
@@ -68,7 +69,6 @@ def seed_products():
     for i in all_cat:
         for e in range(1, 4):
             cat_title = Category.objects.get(title=i)
-            print(i)
             product = dict(
                 title=i + ' ' + str(e),
                 description='Very cool ' + i + str(e),
@@ -81,10 +81,10 @@ def seed_products():
 
             )
             prod = Product(**product).save()
-            # url = r'images/'+i+'.jpg'
-            # marmot_photo = open(r'images\\'+i+'.jpg', 'rb')
-            # prod.photo.put(marmot_photo, content_type='image/jpeg')
-            # prod.save()
+            url = i+'.jpg'
+            with open(r'..\..\bot\images\%s' % (url), 'rb') as image:
+                prod.image.put(image)
+                prod.save()
 
 
 def seed_products_with_image():
@@ -123,23 +123,16 @@ def seed_texts():
 
 if __name__ == '__main__':
 
-    pass
+    # pass
     connect('bot_shop')
+    # user_tst = dict(user_id=8888888,
+    #            name='tst',
+    #            surname='tst',
+    #            nickname='tst',
+    #            language='uk')
+    # User(**user_tst).save()
     # seed_texts()
     # seed_and_cat_sub_cat()
     seed_products()
 
-    # ----------
-    # seed_products_with_image()
-    # cats = seed_and_get_categories_2()
-    # seed_products(20, cats)
-    # text = dict(
-    #     title='Greetings',
-    #     text='Доброго времени суток',
-    #     language='ru'
-    # )
-    # Texts(**text).save()
-    # cats = seed_and_get_categories_2()
-    # cat_obj = Category.objects.get(title="sneakers")
-    # cat_obj.sub_categories = cats
-    # print(cat_obj.save())
+
