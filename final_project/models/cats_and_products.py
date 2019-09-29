@@ -41,7 +41,7 @@ class Product(Document):
 
     @property
     def get_product_info(self):
-        return {"price": self.price,
+        return {"price": self.price/100,
                 "clothing_size": self.clothing_size,
                 "quantity": self.quantity}
 
