@@ -24,7 +24,7 @@ bot = telebot.TeleBot(TOKEN)
 
 API_TOKEN = TOKEN
 
-WEBHOOK_HOST = '35.224.157.246'
+WEBHOOK_HOST = '35.193.203.233'
 WEBHOOK_PORT = 80  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
