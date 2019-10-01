@@ -9,12 +9,13 @@ from telebot.types import (
     InlineKeyboardMarkup,
     ReplyKeyboardMarkup
 )
-#---
-#sudo apt-get install openssl
-#openssl genrsa -out webhook_pkey.pem 2048
-#openssl req -new -x509 -days 3650 -key webhook_pkey.pem -out webhook_cert.pem
+# ---
+# sudo apt-get install openssl
+# openssl genrsa -out webhook_pkey.pem 2048
+# openssl req -new -x509 -days 3650 -key webhook_pkey.pem -out webhook_cert.pem
 import time
 from flask import Flask, request, abort
+
 # from mongoengine import register_connection
 #
 # register_connection(alias=None, db='bot_shop', host='35.224.157.246', port='27017')
@@ -34,13 +35,19 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
+bot.remove_webhook()
+time.sleep(0.1)
+# Set webhook
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+                certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 app = Flask(__name__)
+
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
-    if  request.headers.get('content-type') == 'application/json':
+    if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
@@ -168,7 +175,7 @@ def show_product(call):
                                                            callback_data='product_' + str(p.id)))
 
         bot.send_photo(call.message.chat.id, p.image.get(),
-                       caption=p.title +'\n'+ p.description, reply_markup=products_kb)
+                       caption=p.title + '\n' + p.description, reply_markup=products_kb)
         # bot.send_message(call.message.chat.id, text=p.title, reply_markup=products_kb)  # +'\n'+ p.description
 
 
@@ -183,11 +190,12 @@ def add_to_cart(call):
 @bot.callback_query_handler(func=lambda call: call.data.split('_')[0] == 'product')
 def show_info_product(call):
     product_info = Product.objects.get(id=call.data.split('_')[1]).get_product_info
-    bot.send_message(call.message.chat.id, f"{MESSAGE_NOTIFICATION[Storage.language]['price']} - {product_info['price']}"
-    f"\n{MESSAGE_NOTIFICATION[Storage.language]['clothing_size']}"
-    f" - {product_info['clothing_size']}"
-    f"\n{MESSAGE_NOTIFICATION[Storage.language]['quantity']}"
-    f" - {product_info['quantity']}")
+    bot.send_message(call.message.chat.id,
+                     f"{MESSAGE_NOTIFICATION[Storage.language]['price']} - {product_info['price']}"
+                     f"\n{MESSAGE_NOTIFICATION[Storage.language]['clothing_size']}"
+                     f" - {product_info['clothing_size']}"
+                     f"\n{MESSAGE_NOTIFICATION[Storage.language]['quantity']}"
+                     f" - {product_info['quantity']}")
 
 
 @bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['cart'])
@@ -285,17 +293,10 @@ def buyer_information(message):
                                                             user_id=message.from_user.id).get_user_language).text)
 
 
-
-bot.remove_webhook()
-
-time.sleep(0.1)
-
-# Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
-
-# Start flask server
-app.run(host=WEBHOOK_LISTEN,
-        port=WEBHOOK_PORT,
-        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-        debug=True)
+if __name__ == '__main__':
+    print('bot start')
+    # Start flask server
+    app.run(host=WEBHOOK_LISTEN,
+            port=WEBHOOK_PORT,
+            ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+            debug=True)
