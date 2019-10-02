@@ -1,9 +1,9 @@
 import random
 import string
-from models.cats_and_products import Category, Product, Texts
-from models.user_model import User
+from ../cats_and_products import Category, Product, Texts
+from ../user_model import User
 from mongoengine import connect
-
+from . import models
 random_bool = (True, False)
 
 

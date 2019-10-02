@@ -68,7 +68,7 @@ def seed_products():
     clothing_size_list = ["XS", "S", "M", "L", "XL", "XXL"]
     for i in all_cat:
         for e in range(1, 4):
-            cat_title = Category.objects.get(title=i)
+            cat_title = Category.objects.get(title=str(i))
             product = dict(
                 title=i + ' ' + str(e),
                 description='Very cool ' + i + str(e),
@@ -82,7 +82,7 @@ def seed_products():
             )
             prod = Product(**product).save()
             url = i+'.jpg'
-            with open(r'bot\images\%s' % (url), 'rb') as image:
+            with open(r'/home/ysysuhopar/bot/ITEA_Python_Advanced_final_pruser_model_seeder.pyoject/final_project/bot/images/%s' % (url), 'rb') as image:
                 prod.image.put(image)
                 prod.save()
 
@@ -125,14 +125,14 @@ if __name__ == '__main__':
 
     # pass
     connect('bot_shop')
-    # user_tst = dict(user_id=8888888,
-    #            name='tst',
-    #            surname='tst',
-    #            nickname='tst',
-    #            language='uk')
-    # User(**user_tst).save()
-    # seed_texts()
-    # seed_and_cat_sub_cat()
+    user_tst = dict(user_id=8888888,
+               name='tst',
+               surname='tst',
+               nickname='tst',
+               language='uk')
+    User(**user_tst).save()
+    seed_texts()
+    seed_and_cat_sub_cat()
     seed_products()
 
 
