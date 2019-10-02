@@ -82,7 +82,8 @@ def seed_products():
             )
             prod = Product(**product).save()
             url = i+'.jpg'
-            with open(r'/home/ysysuhopar/bot/ITEA_Python_Advanced_final_pruser_model_seeder.pyoject/final_project/bot/images/%s' % (url), 'rb') as image:
+            with open(r'/home/ysysuhopar/bot/ITEA_Python_Advanced_final_pruser_model_seeder.pyoject/'
+                      r'final_project/bot/images/%s' % (url), 'rb') as image:
                 prod.image.put(image)
                 prod.save()
 

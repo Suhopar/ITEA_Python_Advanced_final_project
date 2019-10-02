@@ -1,9 +1,9 @@
 import random
 import string
-from ../cats_and_products import Category, Product, Texts
-from ../user_model import User
+from models.cats_and_products import Category, Product, Texts, OrdersHistory
+from models.user_model import User
 from mongoengine import connect
-from . import models
+# from . import models
 random_bool = (True, False)
 
 
@@ -125,14 +125,14 @@ if __name__ == '__main__':
 
     # pass
     connect('bot_shop')
-    # user_tst = dict(user_id=8888888,
-    #            name='tst',
-    #            surname='tst',
-    #            nickname='tst',
-    #            language='uk')
-    # User(**user_tst).save()
-    # seed_texts()
-    # seed_and_cat_sub_cat()
+    user_tst = dict(user_id=8888888,
+               name='tst',
+               surname='tst',
+               nickname='tst',
+               language='uk')
+    User(**user_tst).save()
+    seed_texts()
+    seed_and_cat_sub_cat()
     seed_products()
 
 

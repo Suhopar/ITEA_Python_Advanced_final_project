@@ -252,11 +252,14 @@ def submit_cart(call):
 
 @bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['cart_archive'])
 def show_arh(message):
-    list_product = (OrdersHistory.objects.filter(user=User.objects.get(user_id=message.chat.id)).first()).get_orders
-    for i in range(0, len(list_product)):
-        p = list_product[i].products
-        for i in range(0, len(p)):
-            bot.send_message(message.chat.id, p[i].title)
+    if OrdersHistory.objects.filter(user=User.objects.get(user_id=message.chat.id)).first():
+        list_product = (OrdersHistory.objects.filter(user=User.objects.get(user_id=message.chat.id)).first()).get_orders
+        for i in range(0, len(list_product)):
+            p = list_product[i].products
+            for i in range(0, len(p)):
+                bot.send_message(message.chat.id, p[i].title)
+    else:
+        bot.send_message(message.chat.id, MESSAGE_NOTIFICATION[Storage.language]['shopping_history_is_empty'])
 
 
 @bot.message_handler(func=lambda m: m.text == START_KEYBOARD[Storage.language]['language'])

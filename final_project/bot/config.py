@@ -31,7 +31,8 @@ MESSAGE_NOTIFICATION = dict(
         thank_for_order='Спасибо за заказ!',
         price='цена',
         clothing_size='размер одежды',
-        quantity='количество'
+        quantity='количество',
+        shopping_history_is_empty='история покупок пуста '
     ),
     uk=dict(
         in_cart='In Basket',
@@ -45,6 +46,7 @@ MESSAGE_NOTIFICATION = dict(
         thank_for_order='Thank you for the order!',
         price='price',
         clothing_size='clothing size',
-        quantity='quantity'
+        quantity='quantity',
+        shopping_history_is_empty='shopping history is empty'
     )
 )
