@@ -81,22 +81,12 @@ def seed_products():
 
             )
             prod = Product(**product).save()
-            with open(r"/home/ysysuhopar/bot/ITEA_Python_Advanced_final_pruser_model_seeder.pyoject/"
-                      r"final_project/bot/images/%s.jpg" % (i), "rb") as image:
+            url = str(i+'.jpg')
+
+            with open(r'/home/ysysuhopar/bot/ITEA_Python_Advanced_final_project/final_project/bot/images/%s' % url, 'rb') as image:
                 prod.image.put(image)
                 prod.save()
 
-
-def seed_products_with_image():
-    products = Product.objects.all()
-    all_cat = ["Jackets", "Blouse", "T-shirt", "Shirts", "Sports Pants", "Casual Pants", "Shorts", "Sneakers",
-               "Shoes", "Dress", "Pajamas", "Overalls", "Spacesuit"]
-    for i in products:
-        title = i.title
-
-        with open(r'images\test.png', 'rb') as image:
-            i.image.put(image)
-            i.save()
 
 
 def seed_texts():
@@ -124,7 +114,9 @@ def seed_texts():
 if __name__ == '__main__':
 
     # pass
-    connect('bot_shop')
+    db = connect('bot_shop')
+    db.drop_database('bot_shop')
+    db = connect('bot_shop')
     user_tst = dict(user_id=8888888,
                name='tst',
                surname='tst',
