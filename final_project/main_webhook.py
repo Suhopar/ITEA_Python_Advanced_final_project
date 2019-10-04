@@ -20,7 +20,7 @@ import time
 
 connect('bot_shop')
 WEBHOOK_HOST = '35.193.203.233'
-WEBHOOK_PORT = 80  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
 WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
@@ -29,23 +29,12 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (TOKEN)
 bot = telebot.TeleBot(TOKEN)
-<<<<<<< HEAD
-bot.remove_webhook()
-time.sleep(1)
-# Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
-=======
-<<<<<<< HEAD
-bot.remove_webhook()
-time.sleep(1)
 
+bot.remove_webhook()
+time.sleep(1)
 # Set webhook
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
-=======
->>>>>>> d194379d08022d7ca2ef97b1ccc91f0814844ec0
->>>>>>> f9d4ed74e28d3f5fb663048ac4d884083b75e80b
 app = Flask(__name__)
 
 
@@ -298,28 +287,9 @@ def buyer_information(message):
     bot.send_message(message.chat.id, Texts.objects.get(title=START_KEYBOARD['uk']['buyer_information'],
                                                         language=User.objects.get(
                                                             user_id=message.from_user.id).get_user_language).text)
-<<<<<<< HEAD
-=======
-
-
-if __name__ == '__main__':
-<<<<<<< HEAD
-=======
-    bot.remove_webhook()
->>>>>>> d194379d08022d7ca2ef97b1ccc91f0814844ec0
-
-
-<<<<<<< HEAD
 
 if __name__ == '__main__':
     print("Bot started")
-=======
-    # Set webhook
-    bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                    certificate=open(WEBHOOK_SSL_CERT, 'r'))
-
->>>>>>> d194379d08022d7ca2ef97b1ccc91f0814844ec0
->>>>>>> f9d4ed74e28d3f5fb663048ac4d884083b75e80b
     # Start flask server
     app.run(host=WEBHOOK_LISTEN,
             port=WEBHOOK_PORT,
