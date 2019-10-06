@@ -18,9 +18,8 @@ import time
 # openssl req -new -x509 -days 3650 -key webhook_pkey.pem -out webhook_cert.pem
 
 
-connect('bot_shop')
 WEBHOOK_HOST = '35.193.203.233'
-WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_PORT = 80  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
 WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
@@ -36,7 +35,7 @@ time.sleep(1)
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 app = Flask(__name__)
-
+connect('bot_shop')
 
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
@@ -47,7 +46,6 @@ def webhook():
         return ''
     else:
         abort(403)
-
 
 class Storage:
     language = 'uk'
@@ -288,7 +286,7 @@ def buyer_information(message):
                                                         language=User.objects.get(
                                                             user_id=message.from_user.id).get_user_language).text)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Bot started")
     # Start flask server
     app.run(host=WEBHOOK_LISTEN,
