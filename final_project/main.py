@@ -257,7 +257,7 @@ def buyer_information(message):
 
 
 if __name__ == '__main__':
-    bot.remove_webhook()
+    bot.remove_webhook() #-
     print("Bot started")
     bot.polling()
 
